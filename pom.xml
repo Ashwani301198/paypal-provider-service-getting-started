@@ -30,7 +30,7 @@
 			<properties>
 				<spring.profiles.active>local</spring.profiles.active>
 				<logging.path>
-					D:\\ctws\\oct25ct\\logs\\paypal-provider-service</logging.path>
+					D:\\oct25ct\\logs\\paypal-provider-service</logging.path>
 			</properties>
 		</profile>
 		<profile>
