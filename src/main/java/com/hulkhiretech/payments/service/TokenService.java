@@ -1,8 +1,11 @@
 package com.hulkhiretech.payments.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hulkhiretech.payments.constant.Constant;
 import com.hulkhiretech.payments.http.HttpRequest;
 import com.hulkhiretech.payments.http.HttpServiceEngine;
+import com.hulkhiretech.payments.paypal.res.PayPalOAuthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +33,8 @@ public class TokenService {
 
     @Value("${paypal.oauth.url}")
     private String oAuth;
+
+    private final ObjectMapper objectMapper;
 
     public String getAccessToken() {
         log.info("Retrieving access token from TokenService");
@@ -59,7 +64,18 @@ public class TokenService {
         log.info("HTTP response from httpServiceEngine: {}", response);
 
         String tokenBody = response.getBody();
+        log .info("Access token retrieved {}", tokenBody);
 
-        return tokenBody;
+        try {
+            PayPalOAuthToken token = objectMapper.readValue(tokenBody, PayPalOAuthToken.class);
+            log .info("Parsed OAuth token: {}", token);
+
+            return token.getAccessToken();
+
+        } catch (Exception e) {
+            log.error("Error parsing access token response: {}", e.getMessage() , e);
+            throw new RuntimeException("Failed to parse access token response", e);
+        }
+
     }
 }
