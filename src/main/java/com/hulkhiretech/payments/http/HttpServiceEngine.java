@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -15,7 +16,6 @@ public class HttpServiceEngine {
 
     public ResponseEntity<String> makeHttpCall(HttpRequest httpRequest) {
         log.info("Making HTTP call in HttpServiceEngine");
-
 
         try {
             ResponseEntity<String> httpResponse = restClient
@@ -29,14 +29,14 @@ public class HttpServiceEngine {
                     .retrieve()
                     .toEntity(String.class);
 
-            log.info("HTTP call completed in HttpResponse : {}", httpResponse);
+            log.info("HTTP call completed httpResponse:{}", httpResponse);
 
             return httpResponse;
         } catch (Exception e) {
-            log.error("Exception while preparing from data : {}", e.getMessage());
+            log.error("Exception while preparing form data: {}", e.getMessage(), e);
 
-            throw new RuntimeException("HTTP call failed in httpServiceEngine " + ":" + e.getMessage());
+            throw new RuntimeException("HTTP call failed in HttpServiceEngine"
+                    + ": " + e.getMessage());
         }
-
     }
 }

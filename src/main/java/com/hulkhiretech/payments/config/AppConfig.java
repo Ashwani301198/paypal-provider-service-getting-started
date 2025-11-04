@@ -13,8 +13,7 @@ import org.springframework.web.client.RestClient;
 public class AppConfig {
 
     @Bean
-    RestClient restClient2(RestClient.Builder builder) {
-
+    RestClient restClient(RestClient.Builder builder) {
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(100);
         connectionManager.setDefaultMaxPerRoute(100);
@@ -26,13 +25,13 @@ public class AppConfig {
 
         HttpComponentsClientHttpRequestFactory requestFactory =
                 new HttpComponentsClientHttpRequestFactory(httpClient);
-
-        requestFactory.setConnectionRequestTimeout(10000);
-        requestFactory.setConnectTimeout(10000);
-        requestFactory.setReadTimeout(15000);
+        requestFactory.setConnectionRequestTimeout(10000); // 10 seconds - time to get connection from pool
+        requestFactory.setConnectTimeout(10000);  // 10 seconds - time to establish TCP connection
+        requestFactory.setReadTimeout(15000);     // 15 seconds - time waiting for server response
 
         return builder
                 .requestFactory(requestFactory)
                 .build();
     }
+
 }

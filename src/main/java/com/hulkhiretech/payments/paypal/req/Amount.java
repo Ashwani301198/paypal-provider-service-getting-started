@@ -8,7 +8,7 @@ import lombok.Data;
 public class Amount {
 
     @JsonProperty("currency_code")
-    private String currency_code;
+    private String currencyCode;
+
     private String value;
 }
-

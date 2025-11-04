@@ -14,6 +14,4 @@ public class OrderRequest {
 
     @JsonProperty("payment_source")
     private PaymentSource paymentSource;
-
-
 }

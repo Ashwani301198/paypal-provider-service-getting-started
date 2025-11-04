@@ -8,17 +8,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AdditionController {
-	
-	private Logger logger = LoggerFactory.getLogger(AdditionController.class);
-	
+
+    private Logger logger = LoggerFactory.getLogger(AdditionController.class);
+
     @PostMapping("/add")
     public int add(@RequestParam int num1, @RequestParam int num2) {
         logger.info("num1:{}|num2:{}", num1, num2);
-        
+
         int sumResult = num1 + num2;
         logger.info("sumResult:{}", sumResult);
 
         return sumResult;
     }
-     
 }
+
+     
+

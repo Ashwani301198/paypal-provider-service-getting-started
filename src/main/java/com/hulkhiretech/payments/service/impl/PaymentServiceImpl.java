@@ -1,108 +1,63 @@
 package com.hulkhiretech.payments.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hulkhiretech.payments.constant.Constant;
 import com.hulkhiretech.payments.http.HttpRequest;
-import com.hulkhiretech.payments.paypal.req.*;
+import com.hulkhiretech.payments.http.HttpServiceEngine;
+import com.hulkhiretech.payments.paypal.res.PaypalOrder;
+import com.hulkhiretech.payments.pojo.CreateOrderReq;
+import com.hulkhiretech.payments.pojo.OrderResponse;
 import com.hulkhiretech.payments.service.TokenService;
-import jakarta.annotation.PostConstruct;
+import com.hulkhiretech.payments.service.helper.CreateOrderHelper;
+import com.hulkhiretech.payments.service.interfaces.PaymentService;
+import com.hulkhiretech.payments.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.hulkhiretech.payments.service.interfaces.PaymentService;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final TokenService tokenService;
+    private final HttpServiceEngine httpServiceEngine;
+    private final JsonUtil jsonUtil;
+    private final CreateOrderHelper createOrderHelper;
+
+    @Value("${paypal.create.order.url}")
+    private String createOrderUrl;
 
     @Override
-    public String createOrder() {
-        log.info("*****Creating order in PaymentServiceImpl");
+    public OrderResponse createOrder(CreateOrderReq createOrderReq) {
+        log.info("Creating PayPal order in PaymentServiceImpl || Request: {}", createOrderReq);
 
-        // Step 1: Retrieve access token
+        // Step 1: Get Access Token
         String accessToken = tokenService.getAccessToken();
-        log.info("*****Access token retrieved: {}", accessToken);
+        log.info("Access token retrieved successfully.");
 
-        // Step 2: Setup headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Step 2: Prepare HTTP request for PayPal Create Order
+        HttpRequest httpRequest = createOrderHelper.prepareCreateOrderHttpRequest(createOrderReq, accessToken);
+        log.info("Prepared HttpRequest for PayPal Create Order: {}", httpRequest);
 
-        String uuid = UUID.randomUUID().toString();
-        log.info("Generated UUID for PayPal-Request-Id: {}", uuid);
-        headers.add("PayPal-Request-Id", uuid);
+        // Step 3: Make API call to PayPal
+        ResponseEntity<String> responseEntity = httpServiceEngine.makeHttpCall(httpRequest);
+        log.info("Received response from PayPal API: {}", responseEntity);
 
-        // Step 3: Set amount and purchase unit
-        Amount amount = new Amount();
-        amount.setCurrency_code("USD");
-        amount.setValue("1.00");
-
-        PurchaseUnit unit = new PurchaseUnit();
-        unit.setAmount(amount);
-
-        // Step 4: Set experience context
-        ExperienceContext ctx = new ExperienceContext();
-        ctx.setPaymentMethodPreference("IMMEDIATE_PAYMENT_REQUIRED");
-        ctx.setLandingPage("LOGIN");
-        ctx.setShippingPreference("NO_SHIPPING");
-        ctx.setUserAction("PAY_NOW");
-        ctx.setReturnUrl("https://example.com/returnUrl");
-        ctx.setCancelUrl("https://example.com/cancelUrl");
-
-        // Step 5: Set PayPal payment source
-        Paypal paypal = new Paypal();
-        paypal.setExperienceContext(ctx);
-
-        PaymentSource ps = new PaymentSource();
-        ps.setPaypal(paypal);
-
-        // Step 6: Build order request
-        OrderRequest order = new OrderRequest();
-        order.setIntent("CAPTURE");
-        order.setPurchaseUnits(Collections.singletonList(unit));
-        order.setPaymentSource(ps);
-
-        // Step 7: Convert to JSON
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(order);
-            log.info("OrderRequest JSON: {}", json);
-            return json;
-        } catch (JsonProcessingException e) {
-            log.error("Error creating OrderRequest JSON", e);
-            throw new RuntimeException("Error creating OrderRequest JSON", e);
+        // Step 4: Parse JSON response to PaypalOrder
+        String responseBody = responseEntity.getBody();
+        if (responseBody == null || responseBody.isEmpty()) {
+            log.error("Empty response received from PayPal API");
+            throw new RuntimeException("Failed to create PayPal order: empty response");
         }
 
-        // Step 8 (optional, unreachable): Prepare HttpRequest for future use
-        /*
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add(Constant.GRANT_TYPE, Constant.CLIENT_CREDENTIALS);
+        PaypalOrder paypalOrder = jsonUtil.fromJson(responseBody, PaypalOrder.class);
+        log.info("Converted JSON response to PaypalOrder: {}", paypalOrder);
 
-        HttpRequest httpRequest = new HttpRequest();
-        httpRequest.setHttpMethod(HttpMethod.POST);
-        httpRequest.setHttpHeaders(headers);
-        httpRequest.setBody(formData);
+        // Step 5: Convert to internal OrderResponse
+        OrderResponse orderResponse = createOrderHelper.toOrderResponse(paypalOrder);
+        log.info("Converted to internal OrderResponse: {}", orderResponse);
 
-        log.info("Prepared HttpRequest for OAuth call : {}", httpRequest);
-        */
-    }
-
-    @PostConstruct
-    public void init() {
-        log.info("*****PaymentServiceImpl initialized");
+        return orderResponse;
     }
 }
