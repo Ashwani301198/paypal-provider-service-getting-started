@@ -1,4 +1,4 @@
-package com.hulkhiretech.payments.service.interfaces;
+package com.ashwaniPaypalService.payments.service.interfaces;
 
 
 public interface PaymentService {

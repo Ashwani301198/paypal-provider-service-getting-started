@@ -1,8 +1,8 @@
-package com.hulkhiretech.payments.service;
+package com.ashwaniPaypalService.payments.service;
 
-import com.hulkhiretech.payments.constant.Constant;
-import com.hulkhiretech.payments.http.HttpRequest;
-import com.hulkhiretech.payments.http.HttpServiceEngine;
+import com.ashwaniPaypalService.payments.constant.Constant;
+import com.ashwaniPaypalService.payments.http.HttpRequest;
+import com.ashwaniPaypalService.payments.http.HttpServiceEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

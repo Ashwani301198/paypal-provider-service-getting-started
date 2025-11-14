@@ -1,11 +1,11 @@
-package com.hulkhiretech.payments.service.impl;
+package com.ashwaniPaypalService.payments.service.impl;
 
-import com.hulkhiretech.payments.service.TokenService;
+import com.ashwaniPaypalService.payments.service.TokenService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.hulkhiretech.payments.service.interfaces.PaymentService;
+import com.ashwaniPaypalService.payments.service.interfaces.PaymentService;
 
 @Slf4j
 @Service

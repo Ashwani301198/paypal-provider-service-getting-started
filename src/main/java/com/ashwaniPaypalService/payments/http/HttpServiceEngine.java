@@ -1,4 +1,4 @@
-package com.hulkhiretech.payments.http;
+package com.ashwaniPaypalService.payments.http;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

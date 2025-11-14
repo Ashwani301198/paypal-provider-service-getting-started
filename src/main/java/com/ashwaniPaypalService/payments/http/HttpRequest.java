@@ -1,4 +1,4 @@
-package com.hulkhiretech.payments.http;
+package com.ashwaniPaypalService.payments.http;
 
 import lombok.Data;
 import org.springframework.http.HttpHeaders;

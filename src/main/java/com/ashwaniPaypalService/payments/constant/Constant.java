@@ -1,4 +1,4 @@
-package com.hulkhiretech.payments.constant;
+package com.ashwaniPaypalService.payments.constant;
 
 
 public class Constant {

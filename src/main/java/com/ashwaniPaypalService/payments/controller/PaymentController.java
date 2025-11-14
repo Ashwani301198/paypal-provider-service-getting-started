@@ -1,6 +1,6 @@
-package com.hulkhiretech.payments.controller;
+package com.ashwaniPaypalService.payments.controller;
 
-import com.hulkhiretech.payments.service.interfaces.PaymentService;
+import com.ashwaniPaypalService.payments.service.interfaces.PaymentService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
