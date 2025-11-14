@@ -1,4 +1,4 @@
-package com.hulkhiretech.payments.controller;
+package com.ashwaniPaypalService.payments.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
